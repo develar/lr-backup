@@ -4,20 +4,21 @@ import (
   "context"
   "crypto/rand"
   "encoding/base64"
+  "encoding/json"
   "fmt"
   "github.com/develar/lr-backup/pkg/common"
   "io"
   "log"
   "net"
   "net/http"
-  "strconv"
 )
 
 var oauthStateString string
+var port int
 
 func main() {
   http.HandleFunc("/", handleMain)
-  http.HandleFunc("/login", handleGoogleLogin)
+  http.HandleFunc("/login", handleLogin)
   http.HandleFunc("/callback", handleCallback)
 
   listener, err := net.Listen("tcp", "127.0.0.1:0")
@@ -25,7 +26,8 @@ func main() {
     log.Fatal(err)
   }
 
-  log.Print("Listen http://127.0.0.1:" + strconv.Itoa(listener.Addr().(*net.TCPAddr).Port))
+  port = listener.Addr().(*net.TCPAddr).Port
+  log.Print("Listen http://" + listener.Addr().String())
   err = http.Serve(listener, nil)
   if err != nil {
     log.Fatal(err)
@@ -35,7 +37,7 @@ func main() {
 func handleMain(w http.ResponseWriter, _ *http.Request) {
   var htmlIndex = `<html>
 <body>
-	<a href="/login">Adobe Log In</a>
+	<a href="/login">Authenticate</a>
 </body>
 </html>`
   _, _ = fmt.Fprintf(w, htmlIndex)
@@ -47,17 +49,21 @@ func tokenGenerator() string {
   if err != nil {
     log.Fatal(err)
   }
-  return base64.URLEncoding.EncodeToString(data)
+  return base64.RawURLEncoding.EncodeToString(data)
 }
 
-func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
-  oauthStateString = tokenGenerator()
-  url := common.AdobeOauthConfig.AuthCodeURL(oauthStateString)
+func handleLogin(w http.ResponseWriter, r *http.Request) {
+  stateEncoded, err := json.Marshal(AuthRequest{Port: port, Token: tokenGenerator()})
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  url := common.AdobeOauthConfig.AuthCodeURL(base64.RawURLEncoding.EncodeToString(stateEncoded))
   http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 func handleCallback(w http.ResponseWriter, r *http.Request) {
-   err := readCallbackResponse(r.FormValue("state"), r.FormValue("code"))
+  err := readCallbackResponse(r.FormValue("state"), r.FormValue("code"))
   if err != nil {
     fmt.Println(err.Error())
     http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -77,4 +83,9 @@ func readCallbackResponse(state string, code string) error {
 
   log.Printf(token.AccessToken)
   return nil
+}
+
+type AuthRequest struct {
+  Port  int
+  Token string
 }
