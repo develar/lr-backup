@@ -13,7 +13,6 @@ import (
 
 var bindPort = 53672
 
-
 var oauthStateString string
 
 func main() {

@@ -32,18 +32,39 @@ All done. Please go back to lr-backup.
 `
 
 func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-  var t = template.Must(template.New("authResponse").Parse(authResponseTemplate))
-
   var responseBody strings.Builder
-  var err = t.Execute(&responseBody, struct {
-      OK            bool
-      numberOfCarts int
-    }{
-      OK: true,
-    })
+  data := struct {
+    OK          bool
+    Description string
+  }{
+    OK: true,
+  }
+
+  state := request.QueryStringParameters["state"]
+  if len(state) == 0 {
+    data.Description = "state is not provided"
+    data.OK = false
+  }
+
+  code := request.QueryStringParameters["code"]
+  if len(code) == 0 {
+    data.Description = "code is not provided"
+    data.OK = false
+  }
+
+  t, err := template.New("authResponse").Parse(authResponseTemplate)
+  if err != nil {
+    return nil, fmt.Errorf("could not parse template for web response: %w", err)
+  }
+
+  err = t.Execute(&responseBody, data)
   if err != nil {
     return nil, fmt.Errorf("could not execute template for web response: %w", err)
   }
+
+  responseBody.WriteString(state)
+  responseBody.WriteString("<br>")
+  responseBody.WriteString(code)
 
   return &events.APIGatewayProxyResponse{
     StatusCode: 200,
@@ -53,6 +74,5 @@ func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResp
 }
 
 func main() {
-  // Make the handler available for Remote Procedure Call by AWS Lambda
   lambda.Start(handler)
 }
