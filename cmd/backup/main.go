@@ -53,7 +53,7 @@ func tokenGenerator() string {
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) {
-  stateEncoded, err := json.Marshal(AuthRequest{Port: port, Token: tokenGenerator()})
+  stateEncoded, err := json.Marshal(common.AuthRequest{Port: port, Token: tokenGenerator()})
   if err != nil {
     log.Fatal(err)
   }
@@ -83,9 +83,4 @@ func readCallbackResponse(state string, code string) error {
 
   log.Printf(token.AccessToken)
   return nil
-}
-
-type AuthRequest struct {
-  Port  int
-  Token string
 }

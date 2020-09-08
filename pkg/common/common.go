@@ -29,3 +29,8 @@ func init() {
     },
   }
 }
+
+type AuthRequest struct {
+  Port  int
+  Token string
+}
