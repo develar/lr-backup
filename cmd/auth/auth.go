@@ -19,12 +19,9 @@ var authResponseTemplate = `<!DOCTYPE html>
 <hr>
 <pre style="width: 750px; white-space: pre-wrap;">
 {{ if eq .OK false }}
-Error: {{ .Name }}<br>
-{{ if .Description }}Description: {{ .Description }}<br>{{ end }}
-{{ if .Code }}Code: {{ .Code }}<br>{{ end }}
-{{ if .HelpURL }}Look here for help: <a href="{{ .HelpURL }}">{{ .HelpURL }}</a><br>{{ end }}
+  {{ if .Error }}Error: {{ .Error }}<br>{{ end }}
 {{ else }}
-All done. Please go back to lr-backup.
+  All done. Please go back to lr-backup.
 {{ end }}
 </pre>
 </body>
@@ -35,20 +32,20 @@ func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResp
   var responseBody strings.Builder
   data := struct {
     OK          bool
-    Description string
+    Error string
   }{
     OK: true,
   }
 
   state := request.QueryStringParameters["state"]
   if len(state) == 0 {
-    data.Description = "state is not provided"
+    data.Error = "state is not provided"
     data.OK = false
   }
 
   code := request.QueryStringParameters["code"]
   if len(code) == 0 {
-    data.Description = "code is not provided"
+    data.Error = "code is not provided"
     data.OK = false
   }
 

@@ -1,9 +1,21 @@
 package common
 
-import "golang.org/x/oauth2"
+import (
+  "golang.org/x/oauth2"
+  "os"
+)
 
 var ClientId string
 var ClientSecret string
+
+func init() {
+  if len(ClientId) == 0 {
+    ClientId = os.Getenv("CLIENT_ID")
+  }
+  if len(ClientSecret) == 0 {
+    ClientSecret = os.Getenv("CLIENT_SECRET")
+  }
+}
 
 // https://console.adobe.io/
 var AdobeOauthConfig = &oauth2.Config{

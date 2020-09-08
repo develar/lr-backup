@@ -5,13 +5,13 @@ import (
   "crypto/rand"
   "encoding/base64"
   "fmt"
+  "github.com/develar/lr-backup/pkg/common"
   "io"
   "log"
+  "net"
   "net/http"
   "strconv"
 )
-
-var bindPort = 53672
 
 var oauthStateString string
 
@@ -19,9 +19,14 @@ func main() {
   http.HandleFunc("/", handleMain)
   http.HandleFunc("/login", handleGoogleLogin)
   http.HandleFunc("/callback", handleCallback)
-  hostAndPort := "localhost:" + strconv.Itoa(bindPort)
-  log.Print("Listen http://" + hostAndPort)
-  err := http.ListenAndServe(hostAndPort, nil)
+
+  listener, err := net.Listen("tcp", "127.0.0.1:0")
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  log.Print("Listen http://127.0.0.1:" + strconv.Itoa(listener.Addr().(*net.TCPAddr).Port))
+  err = http.Serve(listener, nil)
   if err != nil {
     log.Fatal(err)
   }
@@ -47,7 +52,7 @@ func tokenGenerator() string {
 
 func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
   oauthStateString = tokenGenerator()
-  url := adobeOauthConfig.AuthCodeURL(oauthStateString)
+  url := common.AdobeOauthConfig.AuthCodeURL(oauthStateString)
   http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
@@ -65,7 +70,7 @@ func readCallbackResponse(state string, code string) error {
     return fmt.Errorf("invalid oauth state")
   }
 
-  token, err := adobeOauthConfig.Exchange(context.Background(), code)
+  token, err := common.AdobeOauthConfig.Exchange(context.Background(), code)
   if err != nil {
     return fmt.Errorf("code exchange failed: %s", err.Error())
   }
