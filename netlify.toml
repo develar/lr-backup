@@ -1,5 +1,5 @@
 [build]
-command = "make build"
+command = "make build-aws-functions"
 functions = "functions"
 publish = "site"
 [build.environment]
