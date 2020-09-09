@@ -15,4 +15,4 @@ ifndef CLIENT_SECRET
 	$(error CLIENT_SECRET is undefined)
 endif
 	rm -rf functions/*
-	go build -ldflags "-s -w -X main.ClientId=${CLIENT_ID} -X main.ClientSecret=${CLIENT_SECRET}" -o functions/auth cmd/auth/auth.go
+	go build -ldflags "-s -w -X common.ClientId=${CLIENT_ID} -X common.ClientSecret=${CLIENT_SECRET} -X common.InPk=${IN_PK} -X common.InSk=${IN_SK} -X common.OutPk=${OUT_PK}" -o functions/auth cmd/auth/auth.go

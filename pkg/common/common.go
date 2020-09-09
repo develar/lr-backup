@@ -34,3 +34,8 @@ type AuthRequest struct {
   Port  int
   Token string
 }
+
+type AuthResponse struct {
+  Code  string
+  Token string
+}

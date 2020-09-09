@@ -1,13 +1,12 @@
 package main
 
 import (
-  "encoding/base64"
-  "encoding/json"
   "errors"
   "github.com/aws/aws-lambda-go/events"
   "github.com/aws/aws-lambda-go/lambda"
   "github.com/develar/lr-backup/pkg/common"
   "net/http"
+  "net/url"
   "strconv"
 )
 
@@ -23,15 +22,28 @@ func handler(request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResp
   }
 
   var authRequest common.AuthRequest
-  decoded, err := base64.RawURLEncoding.DecodeString(state)
-  err = json.Unmarshal(decoded, &authRequest)
+  err := common.Decrypt(state, &authRequest)
   if err != nil {
     return nil, err
   }
 
+  authResponse, err := common.Encrypt(common.AuthResponse{Code: code, Token: authRequest.Token})
+  if err != nil {
+    return nil, err
+  }
+
+  redirectQuery := url.Values{}
+  redirectQuery.Set("r", authResponse)
+  redirectUrl := url.URL{
+    Scheme:   "http",
+    Host:     "127.0.0.1:" + strconv.Itoa(authRequest.Port),
+    Path:     "/callback",
+    RawQuery: redirectQuery.Encode(),
+  }
+
   return &events.APIGatewayProxyResponse{
     StatusCode: http.StatusTemporaryRedirect,
-    Headers:    map[string]string{"Location": "http://127.0.0.1:" + strconv.Itoa(authRequest.Port) + "?code=" + code},
+    Headers:    map[string]string{"Location": redirectUrl.String()},
   }, nil
 }
 
