@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<key>CFBundleName</key>
+<string>Lightroom Backup</string>
+<key>CFBundleExecutable</key>
+<string>lr-backup</string>
+<key>CFBundleIdentifier</key>
+<string>org.develar.lr-backup</string>
+<key>CFBundleIconFile</key>
+<string>icon.icns</string>
+<key>CFBundleShortVersionString</key>
+<string>1.0</string>
+<key>NSHighResolutionCapable</key>
+<true/>
+<key>CFBundleInfoDictionaryVersion</key>
+<string>6.0</string>
+<key>CFBundlePackageType</key>
+<string>APPL</string>
+<key>LSApplicationCategoryType</key>
+<string>public.app-category.photography</string>
+<key>NSSupportsAutomaticGraphicsSwitching</key>
+<true/>
+<key>NSHumanReadableCopyright</key>
+<string>Vladimir Krivosheev (C) 2020 Adobe. All rights reserved.</string>
+</dict>
+</plist>

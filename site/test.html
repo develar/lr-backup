@@ -1,0 +1,25 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{- if .Error -}}Something went wrong{{- else -}}You're all set{{- end -}}</title>
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+</head>
+<body>
+<section class="section">
+  <div class="container">
+    <h1 class="title">
+
+      Something went wrong
+    </h1>
+    <p class="subtitle">
+      <span class="icon has-text-warning">
+        <i class="fal fa-exclamation-triangle"></i>
+      </span>
+      An unknown error has occurred. Here's the error message if you want to file issue:
+    </p>
+  </div>
+</section>
+</body>
+</html>

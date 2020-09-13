@@ -4,7 +4,6 @@ import (
   "crypto/rand"
   "encoding/base64"
   "fmt"
-  "github.com/develar/lr-backup/pkg/common"
   "golang.org/x/crypto/nacl/box"
 )
 

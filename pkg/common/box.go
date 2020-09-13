@@ -72,3 +72,11 @@ func Decrypt(message string, v interface{}) error {
 
   return json.Unmarshal(result, v)
 }
+
+func DecryptBytes(data []byte) (string, error) {
+  result, ok := box.OpenAnonymous(nil, data, inPublicKey, inPrivateKey)
+  if !ok {
+    return "", errors.New("cannot decrypt state")
+  }
+  return string(result), nil
+}
